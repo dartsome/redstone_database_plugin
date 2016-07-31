@@ -15,7 +15,7 @@ Map _db = new Map();
 class MapDbManager extends DatabaseManager<Map> {
   MapDbManager(Serializer serializer): super(serializer);
 
-  Future<Map> getConnection() => _db;
+  Future<Map> getConnection() async => _db;
   void closeConnection(Map connection, {dynamic error}) {}
 }
 

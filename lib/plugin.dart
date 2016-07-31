@@ -113,7 +113,7 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
           return response;
         }
 
-        return db.serializer.encode(response);
+        return db.serializer.toPrimaryObject(response);
       }, includeGroups: true);
     }
   };
