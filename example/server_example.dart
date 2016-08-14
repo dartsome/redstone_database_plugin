@@ -27,7 +27,7 @@ class User {
 
 Map get dbConn => app.request.attributes.dbConn;
 
-var serializer = new Serializer(JSON)
+var serializer = new Serializer(codec: JSON)
     ..addTypeCodec(ObjectId, new ObjectIdCodec());
 var dbManager = new MapDbManager(serializer);
 

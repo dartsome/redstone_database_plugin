@@ -26,7 +26,8 @@ import 'package:shelf/shelf.dart' as shelf;
  */
 class Decode {
   final bool fromQueryParams;
-  const Decode({bool this.fromQueryParams: false});
+  final bool useTypeInfo;
+  const Decode({bool this.fromQueryParams: false, bool this.useTypeInfo});
 }
 
 /**
@@ -43,7 +44,8 @@ class Decode {
  *
  */
 class Encode {
-  const Encode();
+  final bool useTypeInfo;
+  const Encode({bool this.useTypeInfo});
 }
 
 /**
@@ -84,7 +86,8 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
           String handlerName, String paramName, Request request,
           Injector injector) {
         var data;
-        if (metadata.fromQueryParams) {
+        var decode = metadata as Decode;
+        if (decode.fromQueryParams) {
           var params = request.queryParameters;
           data = {};
           params.forEach((String key, List<String> value) {
@@ -96,12 +99,12 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
 
         try {
           if (request.bodyType == JSON || request.bodyType == FORM) {
-            return db.serializer.fromMap(data, paramType);
+            return db.serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
           }
           if (request.bodyType == BINARY) {
             data = new String.fromCharCodes(data as Iterable<int>);
           }
-          return db.serializer.decode(data, paramType);
+          return db.serializer.decode(data, type: paramType, useTypeInfo: decode.useTypeInfo);
 
         } catch (e) {
           throw new ErrorResponse(HttpStatus.BAD_REQUEST, "$handlerName: Error parsing '$paramName' parameter: $e");
@@ -113,7 +116,8 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
           return response;
         }
 
-        return db.serializer.toPrimaryObject(response);
+        var encode = metadata as Encode;
+        return db.serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo);
       }, includeGroups: true);
     }
   };
