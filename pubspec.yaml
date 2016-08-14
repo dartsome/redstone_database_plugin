@@ -1,6 +1,6 @@
 name: redstone_database_plugin
 description: Redstone plugin for serialization and database access
-version: 0.1.1
+version: 0.1.2
 authors:
   - Stéphane Este-Gracias <sestegra@gmail.com>
   - Hadrien Lejard <hadrien.lejard@gmail.com>
@@ -10,7 +10,7 @@ environment:
   sdk: '>=1.8.0 <2.0.0'
 
 dependencies:
-  serializer: ^0.4.1
+  serializer: ^0.4.2
   redstone: ^0.6.7
 
 dev_dependencies:

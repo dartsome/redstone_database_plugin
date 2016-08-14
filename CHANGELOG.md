@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.2
+- Add useTypeInfo field in Decode/Encode annotations
+
 ## 0.1.1
 - Encode response as Map or List (toPrimaryObject instead of encode)
 
