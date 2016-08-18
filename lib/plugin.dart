@@ -7,6 +7,13 @@ import 'package:redstone_database_plugin/database.dart';
 import 'package:redstone/redstone.dart';
 import 'package:shelf/shelf.dart' as shelf;
 
+/// An Exception when errors occur for Decode and Encode annotations
+class DbSerializationException implements Exception {
+  final Exception exception;
+  const DbSerializationException(this.exception);
+  String toString() => runtimeType.toString() + ": " + exception.toString();
+}
+
 /**
  * An annotation to define a target parameter.
  *
@@ -107,7 +114,7 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
           return db.serializer.decode(data, type: paramType, useTypeInfo: decode.useTypeInfo);
 
         } catch (e) {
-          throw new ErrorResponse(HttpStatus.BAD_REQUEST, "$handlerName: Error parsing '$paramName' parameter: $e");
+          throw new DbSerializationException(e);
         }
       });
 
@@ -116,8 +123,12 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
           return response;
         }
 
-        var encode = metadata as Encode;
-        return db.serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo);
+        try {
+          var encode = metadata as Encode;
+          return db.serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo);
+        } catch (e) {
+          throw new DbSerializationException(e);
+        }
       }, includeGroups: true);
     }
   };
