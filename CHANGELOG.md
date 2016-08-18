@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.3
+- Prefer to throw exception instead of sending an error response during serialization
+
 ## 0.1.2
 - Add useTypeInfo field in Decode/Encode annotations
 
