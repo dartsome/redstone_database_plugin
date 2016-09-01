@@ -105,7 +105,7 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
         }
 
         try {
-          if (request.bodyType == JSON || request.bodyType == FORM) {
+          if (request.bodyType == JSON || request.bodyType == FORM || decode.fromQueryParams) {
             return db.serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
           }
           if (request.bodyType == BINARY) {
