@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+- Fix query parameters decoding
+
 ## 0.1.3
 - Prefer to throw exception instead of sending an error response during serialization
 
