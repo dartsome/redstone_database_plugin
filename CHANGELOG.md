@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.5
+- Add serializer parameter in getDatabasePlugin
+
 ## 0.1.4
 - Fix query parameters decoding
 

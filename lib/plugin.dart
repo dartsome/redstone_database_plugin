@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:di/di.dart';
 import 'package:redstone_database_plugin/database.dart';
 import 'package:redstone/redstone.dart';
+import 'package:serializer/serializer.dart';
 import 'package:shelf/shelf.dart' as shelf;
 
 /// An Exception when errors occur for Decode and Encode annotations
@@ -77,7 +78,7 @@ class Encode {
  *      }
  *
  */
-RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/.*']) {
+RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [String dbPathPattern = r'/.*']) {
   return (Manager manager) {
     if (db != null) {
       manager.addInterceptor(new Interceptor(dbPathPattern), "database connection manager",
@@ -106,12 +107,12 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
 
         try {
           if (request.bodyType == JSON || request.bodyType == FORM || decode.fromQueryParams) {
-            return db.serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
+            return serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
           }
           if (request.bodyType == BINARY) {
             data = new String.fromCharCodes(data as Iterable<int>);
           }
-          return db.serializer.decode(data, type: paramType, useTypeInfo: decode.useTypeInfo);
+          return serializer.decode(data, type: paramType, useTypeInfo: decode.useTypeInfo);
 
         } catch (e) {
           throw new DbSerializationException(e);
@@ -125,7 +126,7 @@ RedstonePlugin getDatabasePlugin([DatabaseManager db, String dbPathPattern = r'/
 
         try {
           var encode = metadata as Encode;
-          return db.serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo);
+          return serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo);
         } catch (e) {
           throw new DbSerializationException(e);
         }
