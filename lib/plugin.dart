@@ -1,11 +1,9 @@
 // Copyright (c) 2016, the DartSome project authors.  Please see the AUTHORS file
 
-import 'dart:io';
-
 import 'package:di/di.dart';
 import 'package:redstone_database_plugin/database.dart';
 import 'package:redstone/redstone.dart';
-import 'package:serializer/serializer.dart';
+import 'package:serializer/core.dart';
 import 'package:shelf/shelf.dart' as shelf;
 
 /// An Exception when errors occur for Decode and Encode annotations

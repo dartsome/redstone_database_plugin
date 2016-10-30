@@ -1,7 +1,7 @@
 // Copyright (c) 2016, the DartSome project authors.  Please see the AUTHORS file
 
 import 'dart:async';
-import 'package:serializer/serializer.dart';
+import 'package:serializer/core.dart';
 
 const dbConnectionAttribute = "dbConn";
 

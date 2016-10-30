@@ -9,7 +9,7 @@ import 'package:redstone/redstone.dart' as app;
 import 'package:redstone_database_plugin/database.dart';
 import 'package:redstone_database_plugin/plugin.dart';
 import 'package:serializer/codecs.dart';
-import 'package:serializer/serializer.dart';
+import 'package:serializer/serializer_codegen.dart';
 
 Map _db = new Map();
 class MapDbManager extends DatabaseManager<Map> {
@@ -27,12 +27,12 @@ class User {
 
 Map get dbConn => app.request.attributes.dbConn;
 
-var serializer = new Serializer(codec: JSON)
+var serializer = new CodegenSerializer(codec: JSON)
     ..addTypeCodec(ObjectId, new ObjectIdCodec());
 var dbManager = new MapDbManager(serializer);
 
 main() {
-  app.addPlugin(getDatabasePlugin(dbManager));
+  app.addPlugin(getDatabasePlugin(serializer, dbManager));
   app.setupConsoleLog(Level.INFO);
   app.start();
 }
