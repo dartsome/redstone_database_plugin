@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+- Update to serializer 0.5.0
+
+**Breaking changes:**
+
+- Use a fork of redstone with updated DI
+
 ## 0.1.5
 - Add serializer parameter in getDatabasePlugin
 
