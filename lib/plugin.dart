@@ -1,5 +1,6 @@
 // Copyright (c) 2016, the DartSome project authors.  Please see the AUTHORS file
 
+import 'dart:mirrors';
 import 'package:di/di.dart';
 import 'package:redstone_database_plugin/database.dart';
 import 'package:redstone/redstone.dart';
@@ -105,7 +106,12 @@ RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [Str
 
         try {
           if (request.bodyType == JSON || request.bodyType == FORM || decode.fromQueryParams) {
-            return serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
+            if (data is Map) {
+              return serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
+            } else if (data is List) {
+              paramType = reflectType(paramType).typeArguments.first.reflectedType;
+              return serializer.fromList(data, type: paramType, useTypeInfo: decode.useTypeInfo);
+            }
           }
           if (request.bodyType == BINARY) {
             data = new String.fromCharCodes(data as Iterable<int>);
