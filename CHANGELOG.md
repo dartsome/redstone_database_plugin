@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1
+- Fix issue decoding List
+
 ## 0.2.0
 - Update to serializer 0.5.0
 
