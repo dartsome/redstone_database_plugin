@@ -32,7 +32,7 @@ var serializer = new CodegenSerializer(codec: JSON)
 var dbManager = new MapDbManager(serializer);
 
 main() {
-  app.addPlugin(getDatabasePlugin(serializer, dbManager));
+  app.addPlugin(getDatabasePlugin(serializer, dbManager, null));
   app.setupConsoleLog(Level.INFO);
   app.start();
 }

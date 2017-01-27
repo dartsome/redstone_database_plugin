@@ -52,7 +52,16 @@ class Decode {
  */
 class Encode {
   final bool useTypeInfo;
-  const Encode({bool this.useTypeInfo});
+  final bool withTypeInfo;
+  const Encode({bool this.useTypeInfo, bool this.withTypeInfo});
+}
+
+/**
+ * Interface to log date decode and encode
+ */
+abstract class DataLogger {
+  void decode(Request request, String paramName, Type type, data);
+  void encode(Request request, Type type, data);
 }
 
 /**
@@ -77,7 +86,8 @@ class Encode {
  *      }
  *
  */
-RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [String dbPathPattern = r'/.*']) {
+RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, DataLogger logger,
+    [String dbPathPattern = r'/.*']) {
   return (Manager manager) {
     if (db != null) {
       manager.addInterceptor(new Interceptor(dbPathPattern), "database connection manager",
@@ -89,9 +99,8 @@ RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [Str
         return resp;
       });
 
-      manager.addParameterProvider(Decode, (dynamic metadata, Type paramType,
-          String handlerName, String paramName, Request request,
-          Injector injector) {
+      manager.addParameterProvider(Decode,
+          (dynamic metadata, Type paramType, String handlerName, String paramName, Request request, Injector injector) {
         var data;
         var decode = metadata as Decode;
         if (decode.fromQueryParams) {
@@ -105,6 +114,9 @@ RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [Str
         }
 
         try {
+          if (logger != null) {
+            logger.decode(request, paramName, paramType, data);
+          }
           if (request.bodyType == JSON || request.bodyType == FORM || decode.fromQueryParams) {
             if (data is Map) {
               return serializer.fromMap(data, type: paramType, useTypeInfo: decode.useTypeInfo);
@@ -117,7 +129,6 @@ RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [Str
             data = new String.fromCharCodes(data as Iterable<int>);
           }
           return serializer.decode(data, type: paramType, useTypeInfo: decode.useTypeInfo);
-
         } catch (e) {
           throw new DbSerializationException(e);
         }
@@ -128,9 +139,15 @@ RedstonePlugin getDatabasePlugin(Serializer serializer, DatabaseManager db, [Str
           return response;
         }
 
+        var paramType = response.runtimeType;
         try {
           var encode = metadata as Encode;
-          return serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo);
+          var json =
+              serializer.toPrimaryObject(response, useTypeInfo: encode.useTypeInfo, withTypeInfo: encode.withTypeInfo);
+          if (logger != null) {
+            logger.encode(request, paramType, json);
+          }
+          return json;
         } catch (e) {
           throw new DbSerializationException(e);
         }
