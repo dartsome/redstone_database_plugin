@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- Add DataLogger
+
 ## 0.2.1
 - Fix issue decoding List
 
