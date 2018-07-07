@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.0
+- Align with dart 2
+
 ## 0.3.0
 - Add DataLogger
 

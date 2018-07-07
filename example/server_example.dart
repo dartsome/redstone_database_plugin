@@ -3,17 +3,21 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:bson/bson.dart';
 import 'package:logging/logging.dart';
 import 'package:redstone/redstone.dart' as app;
 import 'package:redstone_database_plugin/database.dart';
 import 'package:redstone_database_plugin/plugin.dart';
 import 'package:serializer/codecs.dart';
-import 'package:serializer/serializer_codegen.dart';
+import 'package:serializer/serializer.dart';
+
+import 'server_example.codec.dart';
 
 Map _db = new Map();
+
 class MapDbManager extends DatabaseManager<Map> {
-  MapDbManager(Serializer serializer): super(serializer);
+  int index = 0;
+
+  MapDbManager(Serializer serializer) : super(serializer);
 
   Future<Map> getConnection() async => _db;
   void closeConnection(Map connection, {dynamic error}) {}
@@ -21,14 +25,13 @@ class MapDbManager extends DatabaseManager<Map> {
 
 @serializable
 class User {
-  ObjectId id;
+  String id;
   String name;
 }
 
-Map get dbConn => app.request.attributes.dbConn;
+Map get dbConn => app.request.attributes['dbConn'];
 
-var serializer = new CodegenSerializer(codec: JSON)
-    ..addTypeCodec(ObjectId, new ObjectIdCodec());
+var serializer = new Serializer(codec: json)..addAllTypeCodecs(example_server_example_codecs);
 var dbManager = new MapDbManager(serializer);
 
 main() {
@@ -42,8 +45,8 @@ main() {
 User addUser(@Decode() User user) {
   app.redstoneLogger.info("POST /users ${user.name}");
 
-  user.id = new ObjectId();
-  dbConn[user.id.toHexString()] = user;
+  user.id = (dbManager.index++).toString();
+  dbConn[user.id] = user;
 
   return user;
 }
@@ -52,7 +55,7 @@ User addUser(@Decode() User user) {
 @Encode()
 List<User> getUsers() {
   app.redstoneLogger.info("GET /users");
-  return dbConn.values.toList();
+  return new List<User>.from(dbConn.values);
 }
 
 @app.Route("/users/:id", methods: const [app.GET])
