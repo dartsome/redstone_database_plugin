@@ -11,13 +11,13 @@ environment:
 
 dependencies:
   serializer: ^0.8.0
-  redstone:
-    git:
-      url: https://github.com/dartsome/redstone.git
-      ref: bcba82b4a4a7bf290577e7eb07f5a33ae671e2de
 
 dev_dependencies:
   bson: ^0.3.1
+  redstone:
+    git:
+      url: https://github.com/dartsome/redstone.git
+      ref: cf6fff976135f28256cf98db560774a05d08634d
   serializer_generator: ^0.8.0
   test: ^1.2.0
 
